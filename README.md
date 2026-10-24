@@ -57,7 +57,8 @@ SQLite database (smartbrew.db, created and seeded automatically by db.py)
 ```
 smartbrew/
 ├── README.md               ← this document
-├── requirements.txt        ← Python dependencies
+├── requirements.txt        ← exact (pinned) Python dependency versions
+├── Dockerfile              ← optional container build (Python 3.12 + pinned libraries)
 ├── run.py                  ← start the server (python run.py [--reset] [--port N] [--host H])
 ├── run_mac_linux.sh        ← one-command setup + start for macOS/Linux
 ├── run_windows.bat         ← double-click setup + start for Windows
@@ -81,24 +82,29 @@ smartbrew/
 | Item | Requirement | Tested with |
 |---|---|---|
 | Operating system | macOS, Linux or Windows | Linux (Ubuntu); the code is OS-independent |
-| Runtime | **Python 3.9 or newer** (no compiler needed: Python is interpreted) | Python **3.9.25** and **3.13.17** |
+| Runtime | **Python 3.9 or newer** (no compiler needed: Python is interpreted) | Python **3.9.25, 3.10.20, 3.11.15, 3.12.13, 3.13.17, 3.14.6** |
 | Browser | Any modern browser (Chrome, Safari, Firefox, Edge) | Chromium |
 | Git | Any recent version, only needed to clone the repository | git 2.43 |
 
 ### Python libraries (installed from `requirements.txt`)
 
-| Library | Version | Used for |
+`requirements.txt` pins **exact versions** (`==`) of every library, including the indirect ones, so the evaluation machine installs exactly what was tested. A clean install of this file was verified on **Python 3.9, 3.10, 3.11, 3.12, 3.13 and 3.14**: all 21 tests pass and `pip check` reports no conflicts.
+
+| Library | Pinned version | Used for |
 |---|---|---|
-| Flask | ≥ 3.0 (tested 3.1.3) | Web server, REST API, sessions |
-| Werkzeug | installed with Flask (tested 3.1.9) | Password hashing (PBKDF2) |
-| qrcode | ≥ 7.4 (tested 8.2) | QR-code receipts (F9), pure Python, no Pillow needed |
-| pytest | ≥ 8.0 (tested 8.4.2 / 9.1.1) | Automated acceptance tests |
+| Flask | 3.1.3 | Web server, REST API, sessions |
+| Werkzeug | 3.1.9 | Password hashing (PBKDF2), installed with Flask |
+| Jinja2, MarkupSafe, itsdangerous, click, blinker | 3.1.6, 3.0.4, 2.2.0, 8.1.8, 1.9.0 | Flask's own dependencies |
+| qrcode | 8.2 | QR-code receipts (F9), pure Python, no Pillow needed |
+| pytest (+ iniconfig, packaging, pluggy, Pygments) | 8.4.2 | Automated acceptance tests |
+| importlib_metadata, zipp, exceptiongroup, tomli, typing_extensions | see file | Back-ports installed **only** on older Python versions (environment markers) |
 
 The standard library also provides `sqlite3`, `json`, `hashlib`, `secrets` and `urllib`. **No database server is needed**: SQLite is built into Python.
 
 ### External dependencies
 
 * **None are required.** The payment gateway, weather API, NFC reader, sensors and SMTP server are simulated inside the app and controlled from the demo panel.
+* **Optional:** [Docker](https://www.docker.com) to run everything in a container instead of installing Python (see §3.3).
 * **Optional:** [Ollama](https://ollama.com) as a local LLM for F7 (see §3.6). Without it, F7 uses the built-in on-device parser.
 
 ---
@@ -149,6 +155,13 @@ Then open **http://127.0.0.1:5001** in your browser. Keep the terminal open whil
 | `--reset` | off | Delete and re-create the database with fresh demo data |
 | `--port N` | `5001` | Port to listen on (5001 avoids macOS AirPlay, which uses 5000) |
 | `--host H` | `127.0.0.1` | Use `0.0.0.0` to open the kiosk from another device on the same network |
+
+**Alternative: run in Docker** (no local Python needed; the image uses Python 3.12 and the same pinned libraries)
+```bash
+docker build -t smartbrew .
+docker run --rm -p 5001:5001 smartbrew                    # then open http://127.0.0.1:5001
+docker run --rm smartbrew python -m pytest -v             # run the tests inside the container
+```
 
 | Environment variable | Meaning |
 |---|---|
