@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartBrew Kiosk</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="layout">
+  <!-- ===================== MACHINE TOUCHSCREEN ===================== -->
+  <main class="machine">
+    <div class="bezel">
+      <header class="topbar">
+        <div class="brand"><span class="logo">☕</span> SmartBrew</div>
+        <div id="statusPills" class="pills"></div>
+        <div id="userBox" class="userbox"></div>
+      </header>
+      <div id="banner" class="banner hidden"></div>
+      <section id="screen" class="screen"></section>
+    </div>
+  </main>
+
+  <!-- ===================== DEMO / SIMULATION PANEL ===================== -->
+  <aside class="demo">
+    <h2>Demo control panel</h2>
+    <p class="muted small">Simulates the machine's sensors and outside world so every feature can be demonstrated.</p>
+
+    <div class="card">
+      <h3>Connectivity &amp; context</h3>
+      <label class="switch"><input type="checkbox" id="dNetwork"> Network online</label>
+      <label class="switch"><input type="checkbox" id="dWeather"> Weather service online</label>
+      <div class="row2">
+        <label>Outside temp <input type="number" id="dTemp" min="-20" max="40" step="1"></label>
+        <label>Condition
+          <select id="dCond"><option>Sunny</option><option>Cloudy</option><option>Rainy</option><option>Snowy</option></select>
+        </label>
+      </div>
+      <label>Time of day
+        <select id="dHour"><option value="">Real clock</option></select>
+      </label>
+      <div id="dPending" class="small muted"></div>
+    </div>
+
+    <div class="card">
+      <h3>Sensors</h3>
+      <div id="dBins"></div>
+      <label>Set ingredient empty
+        <div class="row2"><select id="dIng"></select><button class="btn sm" id="dIngEmpty">Empty it</button></div>
+      </label>
+      <div class="small">Inject a hardware fault:</div>
+      <div class="chips">
+        <button class="chip" data-fault="heater">Heater</button>
+        <button class="chip" data-fault="grinder">Grinder</button>
+        <button class="chip" data-fault="pump">Pump</button>
+        <button class="chip" data-fault="nfc">NFC reader</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Test credentials</h3>
+      <div id="dCards" class="small"></div>
+      <div class="small"><b>Cards:</b> approve <code>4242 4242 4242 4242</code>, decline <code>4000 0000 0000 0002</code></div>
+      <div class="small"><b>Passwords:</b> alice@smartbrew.se / coffee123 · tech@smartbrew.se / tech123 · admin@smartbrew.se / admin123</div>
+    </div>
+
+    <div class="card">
+      <h3>E-mail outbox (simulated SMTP)</h3>
+      <div id="dOutbox" class="small muted">No e-mails yet.</div>
+    </div>
+
+    <button class="btn ghost sm" id="dReset">Reset demo database</button>
+  </aside>
+</div>
+
+<div id="modal" class="modal hidden"><div class="modal-box" id="modalBox"></div></div>
+<div id="toast" class="toast hidden"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
