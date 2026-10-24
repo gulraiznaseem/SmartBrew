@@ -82,21 +82,21 @@ smartbrew/
 | Item | Requirement | Tested with |
 |---|---|---|
 | Operating system | macOS, Linux or Windows | Linux (Ubuntu); the code is OS-independent |
-| Runtime | **Python 3.9 or newer** (no compiler needed: Python is interpreted) | Python **3.9.25, 3.10.20, 3.11.15, 3.12.13, 3.13.17, 3.14.6** |
+| Runtime | **Python 3.8 or newer** (no compiler needed: Python is interpreted) | Python **3.8.20, 3.9.25, 3.10.20, 3.11.15, 3.12.13, 3.13.17, 3.14.6** |
 | Browser | Any modern browser (Chrome, Safari, Firefox, Edge) | Chromium |
 | Git | Any recent version, only needed to clone the repository | git 2.43 |
 
 ### Python libraries (installed from `requirements.txt`)
 
-`requirements.txt` pins **exact versions** (`==`) of every library, including the indirect ones, so the evaluation machine installs exactly what was tested. A clean install of this file was verified on **Python 3.9, 3.10, 3.11, 3.12, 3.13 and 3.14**: all 21 tests pass and `pip check` reports no conflicts.
+`requirements.txt` pins **exact versions** (`==`) of every library, including the indirect ones, so the evaluation machine installs exactly what was tested. Python 3.9+ gets the newest versions; Python 3.8 (shipped with older macOS) automatically gets the last versions that still support it, selected by environment markers in the file. A clean install was verified on **Python 3.8, 3.9, 3.10, 3.11, 3.12, 3.13 and 3.14** (also with the old pip 19.2): all 21 tests pass and `pip check` reports no conflicts.
 
-| Library | Pinned version | Used for |
+| Library | Pinned version (Python 3.9+ / 3.8) | Used for |
 |---|---|---|
-| Flask | 3.1.3 | Web server, REST API, sessions |
-| Werkzeug | 3.1.9 | Password hashing (PBKDF2), installed with Flask |
-| Jinja2, MarkupSafe, itsdangerous, click, blinker | 3.1.6, 3.0.4, 2.2.0, 8.1.8, 1.9.0 | Flask's own dependencies |
-| qrcode | 8.2 | QR-code receipts (F9), pure Python, no Pillow needed |
-| pytest (+ iniconfig, packaging, pluggy, Pygments) | 8.4.2 | Automated acceptance tests |
+| Flask | 3.1.3 / 3.0.3 | Web server, REST API, sessions |
+| Werkzeug | 3.1.9 / 3.0.6 | Password hashing (PBKDF2), installed with Flask |
+| Jinja2, MarkupSafe, itsdangerous, click, blinker | 3.1.6, 3.0.4 / 2.1.5, 2.2.0, 8.1.8, 1.9.0 / 1.8.2 | Flask's own dependencies |
+| qrcode | 8.2 / 7.4.2 (+ pypng on 3.8) | QR-code receipts (F9), pure Python, no Pillow needed |
+| pytest (+ iniconfig, packaging, pluggy, Pygments) | 8.4.2 / 8.3.5 | Automated acceptance tests |
 | importlib_metadata, zipp, exceptiongroup, tomli, typing_extensions | see file | Back-ports installed **only** on older Python versions (environment markers) |
 
 The standard library also provides `sqlite3`, `json`, `hashlib`, `secrets` and `urllib`. **No database server is needed**: SQLite is built into Python.
@@ -126,7 +126,7 @@ Python needs no compiling. "Building" means creating a virtual environment and i
 
 **macOS / Linux**
 ```bash
-python3 --version                 # must be 3.9 or newer
+python3 --version                 # must be 3.8 or newer
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -285,7 +285,9 @@ The on-screen interpretation then reads *"local-llm"*. If the model is unavailab
 | `'python' is not recognized` (Windows) | Reinstall Python with **"Add Python to PATH"** ticked |
 | `Address already in use` | Another app uses the port: `python run.py --port 5002` |
 | The page shows nothing or old data | Check the terminal is still running, then refresh; use `--reset` for fresh data |
-| `ModuleNotFoundError: flask` | Activate the virtual environment first (`source .venv/bin/activate`) |
+| `ModuleNotFoundError: flask` | The install step failed or the environment is not active: run `source .venv/bin/activate` then `python -m pip install -r requirements.txt` |
+| `Could not find a version that satisfies the requirement ...` | Your Python is older than 3.8. Install a current Python from python.org (or use Docker) |
+| Page says "refused to connect" | The server is not running, or a different port is shown in the terminal: open exactly the address printed after `SmartBrew is running` |
 
 ---
 
